@@ -12,20 +12,25 @@
 
 */
 
-#define FEATURE_ELEVATION_CONTROL       // uncomment this for AZ/EL rotators
+// #define FEATURE_ELEVATION_CONTROL       // uncomment this for AZ/EL rotators
 #define FEATURE_YAESU_EMULATION           // uncomment this for Yaesu GS-232 emulation on control port
 // #define FEATURE_EASYCOM_EMULATION         // Easycom protocol emulation on control port (undefine FEATURE_YAESU_EMULATION above)
+// #define FEATURE_DCU_1_EMULATION            // DCU-1 protocol emulation on control port
 
-#define FEATURE_MOON_TRACKING
-#define FEATURE_SUN_TRACKING
-#define FEATURE_CLOCK
+// #define FEATURE_MOON_TRACKING
+// #define FEATURE_SUN_TRACKING
+// #define FEATURE_CLOCK
 // #define FEATURE_GPS
 // #define FEATURE_RTC_DS1307
 // #define FEATURE_RTC_PCF8583
+// #define FEATURE_RTC_TEENSY // Requires DEVELOPMENT_TIMELIB at the moment
 // #define FEATURE_ETHERNET
-// #define FEATURE_STEPPER_MOTOR    // requires Mega or an AVR with Timer 5 support
+// #define FEATURE_STEPPER_MOTOR    // Requires TimerFive library to be copied to the Arduino libraries directory (If using OPTION_STEPPER_MOTOR_USE_TIMER_ONE_INSTEAD_OF_FIVE below, copy the TimeOne library)
 // #define FEATURE_AUTOCORRECT
 // #define FEATURE_TEST_DISPLAY_AT_STARTUP
+
+// #define FEATURE_SATELLITE_TRACKING  // https://github.com/k3ng/k3ng_rotator_controller/wiki/707-Satellite-Tracking
+//#define TEST_NEW_SAT_CALC
 
 #define LANGUAGE_ENGLISH         // all languages customized in rotator_language.h
 // #define LANGUAGE_SPANISH
@@ -34,16 +39,21 @@
 // #define LANGUAGE_PORTUGUESE_BRASIL
 // #define LANGUAGE_GERMAN  
 // #define LANGUAGE_DUTCH
+// #define LANGUAGE_NORWEGIAN_BOKMAAL
+
 
 /* master and remote slave unit functionality */
 // #define FEATURE_REMOTE_UNIT_SLAVE // uncomment this to make this unit a remote unit controlled by a host unit                      
 
 // #define FEATURE_MASTER_WITH_SERIAL_SLAVE       // [master]{remote_port}<-------serial-------->{control_port}[slave]
 // #define FEATURE_MASTER_WITH_ETHERNET_SLAVE     // [master]<-------------------ethernet--------------------->[slave]
+// #define FEATURE_MASTER_SEND_AZ_ROTATION_COMMANDS_TO_REMOTE
+// #define FEATURE_MASTER_SEND_EL_ROTATION_COMMANDS_TO_REMOTE
 
+// #define FEATURE_ADC_RESOLUTION12   // 12 bit ADC resolution for Teensy 3.x, Arduino Due Zero MKR families 
 
 /* position sensors - pick one for azimuth and one for elevation if using an az/el rotator */
- #define FEATURE_AZ_POSITION_POTENTIOMETER   //this is used for both a voltage from a rotator control or a homebrew rotator with a potentiometer
+// #define FEATURE_AZ_POSITION_POTENTIOMETER   //this is used for both a voltage from a rotator control or a homebrew rotator with a potentiometer
 // #define FEATURE_AZ_POSITION_ROTARY_ENCODER
 // #define FEATURE_AZ_POSITION_ROTARY_ENCODER_USE_PJRC_LIBRARY  // library @ http://www.pjrc.com/teensy/td_libs_Encoder.html
 // #define FEATURE_AZ_POSITION_PULSE_INPUT
@@ -54,10 +64,13 @@
 // #define FEATURE_AZ_POSITION_ADAFRUIT_LSM303              // Uncomment for azimuth using LSM303 compass and Adafruit library (https://github.com/adafruit/Adafruit_LSM303) (also uncomment object declaration below)
 // #define FEATURE_AZ_POSITION_POLOLU_LSM303              // Uncomment for azimuth using LSM303 compass and Polulu library
 // #define FEATURE_AZ_POSITION_HH12_AS5045_SSI
+#define FEATURE_AZ_POSITION_HH12_AS5045_SSI_RELATIVE  // use when more than 360 degrees of rotation
 // #define FEATURE_AZ_POSITION_INCREMENTAL_ENCODER
 // #define FEATURE_AZ_POSITION_A2_ABSOLUTE_ENCODER
+// #define FEATURE_AZ_POSITION_MECHASOLUTION_QMC5883   // QMC5883 digital compass support using Mechasolution library at https://github.com/keepworking/Mecha_QMC5883L
 
- #define FEATURE_EL_POSITION_POTENTIOMETER
+
+#define FEATURE_EL_POSITION_POTENTIOMETER
 // #define FEATURE_EL_POSITION_ROTARY_ENCODER
 // #define FEATURE_EL_POSITION_ROTARY_ENCODER_USE_PJRC_LIBRARY  // library @ http://www.pjrc.com/teensy/td_libs_Encoder.html
 // #define FEATURE_EL_POSITION_PULSE_INPUT
@@ -66,12 +79,12 @@
 // #define FEATURE_EL_POSITION_GET_FROM_REMOTE_UNIT            // requires FEATURE_MASTER_WITH_SERIAL_SLAVE or FEATURE_MASTER_WITH_ETHERNET_SLAVE
 // #define FEATURE_EL_POSITION_ADAFRUIT_LSM303                            // Uncomment for elevation using LSM303 accelerometer and Adafruit library (https://github.com/adafruit/Adafruit_LSM303) (also uncomment object declaration below)
 // #define FEATURE_EL_POSITION_POLOLU_LSM303              // Uncomment for elevation using LSM303 compass and Polulu library
-//#define FEATURE_EL_POSITION_HH12_AS5045_SSI
+// #define FEATURE_EL_POSITION_HH12_AS5045_SSI
 // #define FEATURE_EL_POSITION_INCREMENTAL_ENCODER
 // #define FEATURE_EL_POSITION_MEMSIC_2125
 // #define FEATURE_EL_POSITION_A2_ABSOLUTE_ENCODER
 
-// And if you are using an Adafruit, Yourduino, RFRobot, YWRobot, or SainSmart display, you must also change the feature setting in rotator_k3ngdisplay.h!!!!
+// And if you are using any display other than a 4 bit LCD, you must also change the feature setting in rotator_k3ngdisplay.h!!!!
 // #define FEATURE_4_BIT_LCD_DISPLAY // Uncomment for classic 4 bit LCD display (most common)
 // #define FEATURE_ADAFRUIT_I2C_LCD
 // #define FEATURE_ADAFRUIT_BUTTONS  // Uncomment this to use Adafruit I2C LCD buttons for manual AZ/EL instead of normal buttons (also set this feature in rotator_k3ngdisplay.h)
@@ -79,6 +92,11 @@
 // #define FEATURE_RFROBOT_I2C_DISPLAY
 // #define FEATURE_YWROBOT_I2C_DISPLAY
 // #define FEATURE_SAINSMART_I2C_LCD
+// #define FEATURE_MIDAS_I2C_DISPLAY
+// #define FEATURE_FABO_LCD_PCF8574_DISPLAY
+// #define FEATURE_HD44780_I2C_DISPLAY    // Not working yet
+
+// #define FEATURE_NEXTION_DISPLAY  // Documentation: https://github.com/k3ng/k3ng_rotator_controller/wiki/425-Human-Interface:-Nextion-Display
 
 // #define FEATURE_ANALOG_OUTPUT_PINS
 
@@ -104,24 +122,23 @@
 #define OPTION_POSITION_PULSE_INPUT_PULLUPS  // define to enable weak pullups on position pulse inputs
 
 /* less often used features and options */
-// #define OPTION_GS_232B_EMULATION          // comment this out to default to Yaesu GS-232A emulation when using FEATURE_YAESU_EMULATION above
+#define OPTION_GS_232B_EMULATION          // comment this out to default to Yaesu GS-232A emulation when using FEATURE_YAESU_EMULATION above
 #define FEATURE_ROTATION_INDICATOR_PIN     // activate rotation_indication_pin to indicate rotation
 // #define FEATURE_LIMIT_SENSE
 // #define FEATURE_TIMED_BUFFER           // Support for Yaesu timed buffer commands
-#define OPTION_SERIAL_HELP_TEXT        // Yaesu help command prints help
-#define FEATURE_PARK
-#define FEATURE_AUTOPARK               // Requires FEATURE_PARK
-#define OPTION_AZ_MANUAL_ROTATE_LIMITS    // this option will automatically stop the L and R commands when hitting a CCW or CW limit (settings below - AZ_MANUAL_ROTATE_*_LIMIT) 
-#define OPTION_EL_MANUAL_ROTATE_LIMITS
-#define OPTION_EASYCOM_AZ_QUERY_COMMAND // Adds non-standard Easycom command: AZ with no parm returns current azimuth
-#define OPTION_EASYCOM_EL_QUERY_COMMAND // Adds non-standard Easycom command: EL with no parm returns current elevation
+// #define OPTION_SERIAL_HELP_TEXT        // Yaesu help command prints help
+// #define FEATURE_PARK
+// #define FEATURE_AUTOPARK               // Requires FEATURE_PARK
+// #define OPTION_AZ_MANUAL_ROTATE_LIMITS    // this option will automatically stop the L and R commands when hitting a CCW or CW limit (settings below - AZ_MANUAL_ROTATE_*_LIMIT) 
+// #define OPTION_EL_MANUAL_ROTATE_LIMITS
 //#define OPTION_C_COMMAND_SENDS_AZ_AND_EL  // uncomment this when using Yaesu emulation with Ham Radio Deluxe
 //#define OPTION_DELAY_C_CMD_OUTPUT         // uncomment this when using Yaesu emulation with Ham Radio Deluxe
-#define FEATURE_ONE_DECIMAL_PLACE_HEADINGS
-//#define FEATURE_TWO_DECIMAL_PLACE_HEADINGS  // under development - not working yet!
-// #define FEATURE_AZIMUTH_CORRECTION        // correct the azimuth using a calibration table in rotator_settings.h
-// #define FEATURE_ELEVATION_CORRECTION      // correct the elevation using a calibration table in rotator_settings.h
-// #define FEATURE_ANCILLARY_PIN_CONTROL     // control I/O pins with serial commands \F, \N, \P
+//#define FEATURE_AZIMUTH_CORRECTION        // correct the azimuth using a calibration table in rotator_settings.h
+//#define FEATURE_ELEVATION_CORRECTION      // correct the elevation using a calibration table in rotator_settings.h
+//#define FEATURE_AZ_ROTATION_STALL_DETECTION // Azimuth rotation stall detection - pin: az_rotation_stall_detected
+//#define FEATURE_EL_ROTATION_STALL_DETECTION // Elevation rotation stall detection - pin: el_rotation_stall_detected
+//#define OPTION_ROTATION_STALL_DETECTION_SERIAL_MESSAGE // Sends message out serial port when rotation stall has been detected
+//#define FEATURE_ANCILLARY_PIN_CONTROL     // control I/O pins with serial commands \F, \N, \P
 //#define FEATURE_JOYSTICK_CONTROL          // analog joystick support
 //#define OPTION_JOYSTICK_REVERSE_X_AXIS
 //#define OPTION_JOYSTICK_REVERSE_Y_AXIS
@@ -130,6 +147,7 @@
 //#define OPTION_BUTTON_RELEASE_NO_SLOWDOWN  // disables slowdown when CW or CCW button is released, or stop button is depressed
 #define OPTION_SYNC_RTC_TO_GPS // if both realtime clock and GPS are present, synchronize realtime clock to GPS
 
+// LCD Display Options
 #define OPTION_DISPLAY_STATUS
 #define OPTION_DISPLAY_HEADING
 // #define OPTION_DISPLAY_HEADING_AZ_ONLY
@@ -139,19 +157,21 @@
 // #define OPTION_DISPLAY_ALT_HHMM_CLOCK_AND_MAIDENHEAD // display alternating HH:MM clock and maidenhead on LCD row 1 (set position with #define LCD_HHMMCLOCK_POSITION)
 #define OPTION_DISPLAY_CONSTANT_HHMMSS_CLOCK_AND_MAIDENHEAD // display constant HH:MM:SS clock and maidenhead on LCD row 1 (set position with #define LCD_CONSTANT_HHMMSSCLOCK_MAIDENHEAD_POSITION)
 // #define OPTION_DISPLAY_BIG_CLOCK   // display date & time clock (set row with #define LCD_BIG_CLOCK_ROW)
-//#define OPTION_CLOCK_ALWAYS_HAVE_HOUR_LEADING_ZERO
+#define OPTION_CLOCK_ALWAYS_HAVE_HOUR_LEADING_ZERO
 #define OPTION_DISPLAY_GPS_INDICATOR  // display GPS indicator on LCD - set position with LCD_GPS_INDICATOR_POSITION and LCD_GPS_INDICATOR_ROW
-// #define OPTION_DISPLAY_MOON_TRACKING_CONTINUOUSLY
-//#define OPTION_DISPLAY_DIRECTION_STATUS // N, W, E, S, NW, etc. direction indicator
-#define OPTION_DISPLAY_SUN_TRACKING_CONTINUOUSLY
-//#define OPTION_DISPLAY_MOON_OR_SUN_TRACKING_CONDITIONAL
+// #define OPTION_DISPLAY_DIRECTION_STATUS                         // LCD N, W, E, S, NW, etc. direction indicator
+#define OPTION_DISPLAY_MOON_TRACKING_CONTINUOUSLY               // LCD
+#define OPTION_DISPLAY_SATELLITE_TRACKING_CONTINUOUSLY          // LCD
+#define OPTION_DISPLAY_SATELLITE_TRACKING_ALTERNATING          // LCD
+// #define OPTION_DISPLAY_SUN_TRACKING_CONTINUOUSLY                // LCD
+// #define OPTION_DISPLAY_MOON_OR_SUN_OR_SAT_TRACKING_CONDITIONAL  // LCD
 #define OPTION_DISPLAY_VERSION_ON_STARTUP  //code provided by Paolo, IT9IPQ
-#define OPTION_LCD_HEADING_FIELD_FIXED_DECIMAL_PLACE
+// #define OPTION_LCD_HEADING_FIELD_FIXED_DECIMAL_PLACE
 
 //#define FEATURE_POWER_SWITCH
 //#define OPTION_EXTERNAL_ANALOG_REFERENCE  //Activate external analog voltage reference (needed for RemoteQTH.com unit)
-//#define OPTION_SYNC_MASTER_CLOCK_TO_SLAVE        // use when GPS unit is connected to slave unit and you want to synchronize the master unit clock to the slave unit GPS clock
-//#define OPTION_SYNC_MASTER_COORDINATES_TO_SLAVE  // use when GPS unit is connected to slave unit and you want to synchronize the master unit coordinates to the slave unit GPS
+#define OPTION_SYNC_MASTER_CLOCK_TO_SLAVE        // use when GPS unit is connected to slave unit and you want to synchronize the master unit clock to the slave unit GPS clock
+#define OPTION_SYNC_MASTER_COORDINATES_TO_SLAVE  // use when GPS unit is connected to slave unit and you want to synchronize the master unit coordinates to the slave unit GPS
 //#define OPTION_DISABLE_HMC5883L_ERROR_CHECKING
 // #define OPTION_HAMLIB_EASYCOM_AZ_EL_COMMAND_HACK
 // #define OPTION_HAMLIB_EASYCOM_NO_TERMINATOR_CHARACTER_HACK
@@ -161,10 +181,34 @@
 // #define OPTION_SCANCON_2RMHF3600_INC_ENCODER  // use with FEATURE_AZ_POSITION_INCREMENTAL_ENCODER and/or FEATURE_EL_POSITION_INCREMENTAL_ENCODER if using the ScanCon 2RMHF3600 incremental encoder
 // #define OPTION_RESET_METHOD_JMP_ASM_0
 // #define OPTION_SAVE_MEMORY_EXCLUDE_EXTENDED_COMMANDS
+// #define OPTION_SAVE_MEMORY_EXCLUDE_BACKSLASH_CMDS
 // #define OPTION_REVERSE_AZ_HH12_AS5045
 // #define OPTION_REVERSE_EL_HH12_AS5045
 // #define OPTION_DONT_READ_GPS_PORT_AS_OFTEN
+// #define OPTION_GPS_DO_PORT_FLUSHES
 // #define OPTION_SEND_STRING_OUT_CONTROL_PORT_WHEN_INITIALIZING  // change OPTION_SEND_STRING_OUT_CONTROL_PORT_WHEN_INITIALIZING_STRING in settings file
+// #define OPTION_GPS_EXCLUDE_MISSING_LF_CR_HANDLING
+// #define OPTION_MORE_SERIAL_CHECKS
+#define OPTION_STEPPER_MOTOR_USE_TIMER_ONE_INSTEAD_OF_FIVE
+// #define OPTION_ALLOW_ROTATIONAL_AND_CONFIGURATION_CMDS_AT_BOOT_UP // if disabled, rotational and configuration commands will be ignored on the serial port for the first 10 second after boot up
+
+// #define OPTION_STEPPER_MOTOR_MAX_2_KHZ
+// #define OPTION_STEPPER_MOTOR_MAX_5_KHZ
+// #define OPTION_STEPPER_MOTOR_MAX_10_KHZ
+#define OPTION_STEPPER_MOTOR_MAX_20_KHZ
+// #define OPTION_STEPPER_MOTOR_MAX_50_KHZ  // DO NOT USE !  Too much interrupt overhead
+
+//#define OPTION_STEPPER_DO_NOT_USE_DIGITALWRITEFAST_LIBRARY
+
+// #define OPTION_USE_OLD_TIME_CODE
+
+#define OPTION_CLI_VT100
+
+#define OPTION_GPS_USE_TINY_GPS_LIBRARY               // For serial port based NMEA GPS units; serial port defined by GPS_PORT and GPS_PORT_BAUD_RATE in settings file
+// #define OPTION_GPS_USE_SPARKFUN_U_BLOX_GNSS_LIBRARY   // For Sparkfun (and perhaps others) u-blox GPS units interfaced via I2C ( https://github.com/sparkfun/SparkFun_u-blox_GNSS_Arduino_Library)
+
+#define OPTION_DEPRECATED_NEXTION_INIT_CODE_1  // use only with VK4GHZ Nextion firmware versions previous to 2021-10-23
+// #define OPTION_DEPRECATED_NEXTION_INIT_CODE_2  // use only with VK4GHZ Nextion firmware versions previous to 2021-10-23
 
 
 										// ######## ########  ######  ######## 
@@ -176,67 +220,7 @@
 										//    ##    ########  ######     ##  
 
 
-/* ---------------------- debug stuff - don't touch unless you know what you are doing --------------------------- */
 
-
-
-#define DEFAULT_DEBUG_STATE 0 // 1 = activate debug mode at startup; this should be set to zero unless you're debugging something at startup
-
-#define DEBUG_DUMP  // normally compile with this activated unless you're really trying to save memory
-// #define DEBUG_LOOP
-// #define DEBUG_BUTTONS
-// #define DEBUG_SERIAL
-// #define DEBUG_SERVICE_REQUEST_QUEUE
-// #define DEBUG_EEPROM
-// #define DEBUG_AZ_SPEED_POT
-// #define DEBUG_AZ_PRESET_POT
-// #define DEBUG_PRESET_ENCODERS
-// #define DEBUG_AZ_MANUAL_ROTATE_LIMITS
-// #define DEBUG_EL_MANUAL_ROTATE_LIMITS
-// #define DEBUG_BRAKE
-// #define DEBUG_OVERLAP
-// #define DEBUG_DISPLAY
-// #define DEBUG_AZ_CHECK_OPERATION_TIMEOUT
-// #define DEBUG_TIMED_BUFFER
-// #define DEBUG_EL_CHECK_OPERATION_TIMEOUT
-// #define DEBUG_VARIABLE_OUTPUTS
-// #define DEBUG_ROTATOR
-// #define DEBUG_SUBMIT_REQUEST
-// #define DEBUG_SERVICE_ROTATION
-// #define DEBUG_POSITION_ROTARY_ENCODER
-// #define DEBUG_POSITION_ROTARY_ENCODER_USE_PJRC_LIBRARY
-// #define DEBUG_PROFILE_LOOP_TIME
-// #define DEBUG_POSITION_PULSE_INPUT
-// #define DEBUG_ACCEL
-// #define DEBUG_SVC_REMOTE_COMM_INCOMING_BUFFER
-// #define DEBUG_SVC_REMOTE_COMM_INCOMING_BUFFER_BAD_DATA
-// #define DEBUG_HEADING_READING_TIME
-// #define DEBUG_JOYSTICK
-// #define DEBUG_ROTATION_INDICATION_PIN
-// #define DEBUG_HH12
-// #define DEBUG_PARK
-// #define DEBUG_LIMIT_SENSE
-// #define DEBUG_AZ_POSITION_INCREMENTAL_ENCODER
-// #define DEBUG_EL_POSITION_INCREMENTAL_ENCODER
-// #define DEBUG_MOON_TRACKING
-// #define DEBUG_SUN_TRACKING
-// #define DEBUG_GPS
-// #define DEBUG_GPS_SERIAL
-// #define DEBUG_OFFSET
-// #define DEBUG_RTC
-// #define DEBUG_PROCESS_YAESU
-// #define DEBUG_ETHERNET
-// #define DEBUG_PROCESS_SLAVE
-// #define DEBUG_MEMSIC_2125
-// #define DEBUG_SYNC_MASTER_CLOCK_TO_SLAVE
-// #define DEBUG_SYNC_MASTER_COORDINATES_TO_SLAVE
-// #define DEBUG_HMC5883L
-// #define DEBUG_POLOLU_LSM303_CALIBRATION
-// #define DEBUG_STEPPER
-// #define DEBUG_AUTOCORRECT
-// #define DEBUG_A2_ENCODER
-// #define DEBUG_A2_ENCODER_LOOPBACK_TEST
-// #define DEBUG_QMC5883
 
 
 								// ######## ########  ######  ######## 
@@ -246,9 +230,3 @@
 								//    ##    ##             ##    ##    
 								//    ##    ##       ##    ##    ##    
 								//    ##    ########  ######     ##  
-
-
-
-
-
-

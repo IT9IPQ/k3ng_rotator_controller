@@ -18,12 +18,12 @@
 #define rotate_cw_ccw_pwm 0      // optional - PWM on CW and CCW output - set to 0 to disable (must be PWM capable pin)
 #define rotate_cw_freq 0         // optional - CW variable frequency output
 #define rotate_ccw_freq 0        // optional - CCW variable frequency output
-#define button_cw 0              // normally open button to ground for manual CW rotation (schematic pin: A1)
-#define button_ccw 0             // normally open button to ground for manual CCW rotation (schematic pin: A2)
+#define button_cw 0              // normally open button to ground for manual CW rotation (schematic pin: A2)
+#define button_ccw 0             // normally open button to ground for manual CCW rotation (schematic pin: A3)
 #define serial_led 0             // LED blinks when command is received on serial port (set to 0 to disable)
 #define rotator_analog_az A0     // reads analog azimuth voltage from rotator - pin 4 on Yaesu connector
 #define azimuth_speed_voltage 0  // optional - PWM output for speed control voltage feed into rotator (on continually unlike rotate_cw_pwm and rotate_ccw_pwm)
-#define overlap_led 0            // line goes high when azimuth rotator is in overlap (> 360 rotators)
+#define overlap_led 0            // line goes active when azimuth rotator is in overlap (> 360 rotators)
 #define brake_az 0               // goes high to disengage azimuth brake (set to 0 to disable)
 #define az_speed_pot 0           // connect to wiper of 1K to 10K potentiometer for speed control (set to 0 to disable)
 #define az_preset_pot 0          // connect to wiper of 1K to 10K potentiometer for preset control (set to 0 to disable)
@@ -31,8 +31,8 @@
 #define button_stop 0            // connect to momentary switch (ground on button press) for preset stop (set to 0 to disable or for preset automatic start)
 #define rotation_indication_pin 0
 #define blink_led 0
-#define az_stepper_motor_pulse 44 //0
-#define az_stepper_motor_direction 0
+#define az_stepper_motor_pulse 0
+#define az_rotation_stall_detected 0
 
 
 
@@ -52,6 +52,7 @@
   #define brake_el 0                // goes high to disengage elevation brake (set to 0 to disable)
   #define elevation_speed_voltage  0 // optional - PWM output for speed control voltage feed into rotator (on continually unlike rotate_up_pwm and rotate_down_pwm)
   #define el_stepper_motor_pulse 0
+  #define el_rotation_stall_detected 0
 #endif //FEATURE_ELEVATION_CONTROL
 
 // rotary encoder pins and options
@@ -103,7 +104,7 @@
   #define pin_joystick_y A1
 #endif //FEATURE_JOYSTICK_CONTROL
 
-#ifdef FEATURE_AZ_POSITION_HH12_AS5045_SSI
+#if defined(FEATURE_AZ_POSITION_HH12_AS5045_SSI) || defined(FEATURE_AZ_POSITION_HH12_AS5045_SSI_RELATIVE)
   #define az_hh12_clock_pin 11
   #define az_hh12_cs_pin 12
   #define az_hh12_data_pin 13
@@ -227,3 +228,11 @@
 #ifdef FEATURE_AUDIBLE_ALERT
   #define pin_audible_alert 0
 #endif        
+
+//#define pin_status_led 0   // Status LED - blinks when there is rotation in progress
+
+// Added 2020.07.24.01
+#define satellite_tracking_active_pin 0
+#define satellite_tracking_activate_line 0
+#define satellite_tracking_button 0        // use with a normally open momentary switch to ground
+

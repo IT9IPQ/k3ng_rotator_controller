@@ -22,10 +22,12 @@
 // #define FEATURE_RFROBOT_I2C_DISPLAY
 // #define FEATURE_YWROBOT_I2C_DISPLAY
 // #define FEATURE_SAINSMART_I2C_LCD
+// #define FEATURE_ADAFRUIT_BUTTONS   
+// #define FEATURE_MIDAS_I2C_DISPLAY
+// #define FEATURE_FABO_LCD_PCF8574_DISPLAY  
+// #define FEATURE_HD44780_I2C_DISPLAY           
 
-// #define FEATURE_ADAFRUIT_BUTTONS                
-
-
+// #define OPTION_RFROBOT_I2C_DISPLAY_BACKLIGHT_OFF
 
 #include "rotator_hardware.h"
 
@@ -34,6 +36,9 @@
 #endif
 #ifdef HARDWARE_WB6KCN
   #include "rotator_features_wb6kcn.h"
+#endif
+#ifdef HARDWARE_WB6KCN_K3NG
+  #include "rotator_features_wb6kcn_k3ng.h"
 #endif
 #ifdef HARDWARE_M0UPU
   #include "rotator_features_m0upu.h"
@@ -44,15 +49,14 @@
 #if !defined(HARDWARE_CUSTOM)
   #include "rotator_features.h" 
 #endif   
-
-#ifdef HARDWARE_EA4TX_ARS_USB
-  #include "rotator_pins_ea4tx_ars_usb.h"
-#endif
 #ifdef HARDWARE_M0UPU
   #include "rotator_pins_m0upu.h"
 #endif
 #ifdef HARDWARE_WB6KCN
   #include "rotator_pins_wb6kcn.h"
+#endif
+#ifdef HARDWARE_WB6KCN_K3NG
+  #include "rotator_pins_wb6kcn_k3ng.h"
 #endif
 #ifdef HARDWARE_TEST
   #include "rotator_pins_test.h"
@@ -65,7 +69,7 @@
   #include "rotator.h"
 #endif
 
-#define K3NG_DISPLAY_LIBRARY_VERSION "1.0.2016032901"
+#define K3NG_DISPLAY_LIBRARY_VERSION "2021.10.14.01"
 #define MAX_SCREEN_BUFFER_COLUMNS 20
 #define MAX_SCREEN_BUFFER_ROWS 4
 

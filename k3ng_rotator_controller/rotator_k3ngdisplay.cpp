@@ -1,7 +1,7 @@
 #ifndef K3NG_DISPLAY_H
 #define K3NG_DISPLAY_H
 
-// K3NG_DISPLAY_LIBRARY_VERSION "1.0.2016032901"
+// K3NG_DISPLAY_LIBRARY_VERSION "2020.03.16.01"
 
 
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -11,9 +11,6 @@
 #endif
 
 #include "rotator_k3ngdisplay.h"
-
-
-
 
 #ifdef FEATURE_4_BIT_LCD_DISPLAY
   #include <LiquidCrystal.h>
@@ -34,7 +31,18 @@
 #if defined(FEATURE_YOURDUINO_I2C_LCD)
   #include <LCD.h>
 #endif  
-
+#if defined(FEATURE_MIDAS_I2C_DISPLAY)
+  //#include <lcd.h>
+  #include <LCD_C0220BiZ.h>
+  #include <ST7036.h>
+#endif
+#if defined(FEATURE_FABO_LCD_PCF8574_DISPLAY)
+  #include <FaBoLCD_PCF8574.h>
+#endif
+#if defined(FEATURE_HD44780_I2C_DISPLAY)
+  #include <hd44780.h>                       // main hd44780 header
+  #include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
+#endif  
 
 
 #if defined(FEATURE_YOURDUINO_I2C_LCD)
@@ -49,7 +57,6 @@
   LiquidCrystal_I2C lcd(0x27,16,2); 
   // LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 #endif //FEATURE_RFROBOT_I2C_DISPLAY
-
 
 #if defined(FEATURE_YWROBOT_I2C_DISPLAY)
   #include <LiquidCrystal_I2C.h>
@@ -71,6 +78,17 @@
   LiquidCrystal_I2C lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin, BACKLIGHT_PIN, POSITIVE);  
 #endif //FEATURE_SAINSMART_I2C_LCD
 
+#if defined(FEATURE_MIDAS_I2C_DISPLAY)
+  ST7036 lcd = ST7036 ( 2, 16, 120 );
+#endif  
+
+#if defined(FEATURE_FABO_LCD_PCF8574_DISPLAY)
+  FaBoLCD_PCF8574 lcd;
+#endif
+
+#if defined(FEATURE_HD44780_I2C_DISPLAY)
+  hd44780_I2Cexp lcd;
+#endif  
 
 int display_columns = 0;
 uint8_t display_rows = 0;
@@ -110,10 +128,19 @@ K3NGdisplay::K3NGdisplay(int _display_columns, int _display_rows, int _update_ti
 
 void K3NGdisplay::initialize(){
 
-
+  #if !defined(FEATURE_MIDAS_I2C_DISPLAY)
   lcd.begin(display_columns, display_rows);  // if you are getting an error on this line and do not have
                                              // any of the LCD display features enabled, remove
                                              // k3ngdisplay.h and k3ngdisplay.cpp from your ino directory
+  #endif
+
+  #if defined(FEATURE_MIDAS_I2C_DISPLAY)
+    lcd.init();
+  #endif
+
+  #if defined(FEATURE_FABO_LCD_PCF8574_DISPLAY)
+    lcd.begin(display_columns, display_rows);
+  #endif  
 
   #ifdef FEATURE_YOURDUINO_I2C_LCD
     lcd.setBacklightPin(BACKLIGHT_PIN, POSITIVE);
@@ -123,6 +150,18 @@ void K3NGdisplay::initialize(){
   #ifdef FEATURE_ADAFRUIT_I2C_LCD
     lcd.setBacklight(I2C_LCD_COLOR);
   #endif // FEATURE_ADAFRUIT_I2C_LCD
+
+  #ifdef FEATURE_RFROBOT_I2C_DISPLAY
+    #ifdef OPTION_RFROBOT_I2C_DISPLAY_BACKLIGHT_OFF
+      lcd.noBacklight();
+    #else
+      lcd.backlight();
+    #endif
+  #endif
+
+  #ifdef FEATURE_4_BIT_LCD_DISPLAY
+    lcd.noCursor();
+  #endif  
 
   clear();
 
@@ -216,6 +255,11 @@ void K3NGdisplay::clear(){
   }
 
   lcd.clear();
+
+  #ifdef FEATURE_4_BIT_LCD_DISPLAY
+    lcd.noCursor();
+  #endif  
+  
   current_print_row = 0;
   current_print_column = 0;
   revert_screen_flag = 0;
@@ -255,10 +299,18 @@ void K3NGdisplay::update(){
 
   // update the screen with changes that are pending in screen_buffer_pending
 
+  //static int round_robin_refresh_position = 0;
+
+  byte wrote_to_lcd_last_loop = 0;
+
+  lcd.noCursor();
+  lcd.setCursor(0,0);
 
   for (int x = 0;x < (display_columns*display_rows);x++){  	
-    if (screen_buffer_live[x] != screen_buffer_pending[x]){  // do we have a new character to put on the screen ?
-      lcd.setCursor(Xposition(x),Yposition(x));
+    if ((screen_buffer_live[x] != screen_buffer_pending[x]) /*|| (x == round_robin_refresh_position)*/){  // do we have a new character to put on the screen ?
+      if (!wrote_to_lcd_last_loop){
+        lcd.setCursor(Xposition(x),Yposition(x));
+      }
       if (screen_buffer_attributes_pending[x] & ATTRIBUTE_BLINK){  // does this character have the blink attribute
         if (current_blink_state){
           lcd.print(screen_buffer_pending[x]);
@@ -270,19 +322,30 @@ void K3NGdisplay::update(){
       }
       screen_buffer_live[x] = screen_buffer_pending[x];
       screen_buffer_attributes_live[x] = screen_buffer_attributes_pending[x];
+      wrote_to_lcd_last_loop = 1;
     } else {  // not a new character, do we have live character on the screen to blink?
       if (last_blink_state != current_blink_state){
         if (screen_buffer_attributes_live[x] & ATTRIBUTE_BLINK){
-        	lcd.setCursor(Xposition(x),Yposition(x));
+          if (!wrote_to_lcd_last_loop){
+        	  lcd.setCursor(Xposition(x),Yposition(x));
+          }
         	if (current_blink_state){
-              lcd.print(screen_buffer_live[x]);
-      	    } else {
-      	      lcd.print(' ');
-      	    }
+            lcd.print(screen_buffer_live[x]);
+          } else {
+            lcd.print(' ');
+          }
+          wrote_to_lcd_last_loop = 1;
         }
+      } else {
+        wrote_to_lcd_last_loop = 0;
       }
     }
   }
+
+  // round_robin_refresh_position++;
+  // if (round_robin_refresh_position >= (display_columns*display_rows)){
+  //   round_robin_refresh_position = 0; 
+  // }
 
   last_blink_state = current_blink_state;
 
@@ -292,6 +355,9 @@ void K3NGdisplay::update(){
 void K3NGdisplay::redraw(){
 
   // redraw the screen with the current screen_buffer_live
+
+  lcd.noCursor();
+  lcd.setCursor(0,0);
 
   for (int x = 0;x < (display_columns*display_rows);x++){   
     lcd.setCursor(Xposition(x),Yposition(x));
